@@ -95,7 +95,6 @@ for i in range(len(order)):
 
 #C = [np.random.randint(500) for _ in range(C.shape[1])]
 dishout = np.reshape(C,(len(sub),oDS.shape[0]))
-
 analysis_name = 'subs-concat-1'
 for i in range(len(sub)):
     ofn = os.path.join(code_root,'Results','sub{}-{}'.format(i,analysis_name)+'.nii')
