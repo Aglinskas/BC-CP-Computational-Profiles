@@ -32,7 +32,6 @@ masker = NiftiMasker(mask_img=mfn, standardize=True)
 #ds = fmri_dataset(fn,mask=mfn) # Dataset
 s = sub[0]
 
-oDS = get_ds(sub[0])
 def get_ds(s):
     ''' Returns feat by voxels matrix for input subject '''
     # Grab first scan
@@ -48,7 +47,7 @@ def get_ds(s):
         
     return ds.transpose()
 
-
+oDS = get_ds(sub[0])
 # First subject DS
 ds = get_ds(sub[0])
 # Append other subject DS
