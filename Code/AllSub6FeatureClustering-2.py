@@ -12,27 +12,21 @@ import os
 
 root= '/gsfs0/data/poskanzc/MVPN/analysis/net_results/subject_images/'
 code_root = '/gsfs0/data/poskanzc/BC-CP-Computational-Profiles/'
-#code_root = '/Users/aidasaglinskas/Desktop/BC-CP-Computational-Profiles/'
 
+
+#code_root = '/Users/aidasaglinskas/Desktop/BC-CP-Computational-Profiles/'
 #root = '/Users/aidasaglinskas/Desktop/BC-CP-Computational-Profiles/Data/subject_images/'
-#sub='sub-01'
+
 sub=['sub-01','sub-02','sub-03','sub-04','sub-05','sub-09','sub-10','sub-14','sub-15','sub-16','sub-17','sub-18','sub-19','sub-20']
+#sub='sub-01'
 #mask_filename = '/Users/craigposkanzer/Documents/MVPN-Data/brain_mask_bool.nii.gz'
 #fmri_filename = '/Users/craigposkanzer/Documents/MVPN-Data/5layer/5layer_images/lin_sub-01.nii'
 f_temp = ['{}_lin_img.nii.gz','{}_nl_img.nii.gz','dense_images/{}_5dense_lin_img.nii.gz','dense_images/{}_5dense_nl_img.nii.gz','5layer_images/{}_5layer_lin_img.nii.gz','5layer_images/{}_5layer_nl_img.nii.gz']
 mfn = root+'brain_mask_bool.nii.gz'
 
-#turn the image into an array
+
 masker = NiftiMasker(mask_img=mfn, standardize=True)
-#ds = masker.fit_transform(fmri_filename)
-#ds = fmri_dataset(fn,mask=mfn)
 
-# Grab the first scan
-
-#ds = fmri_dataset(fn,mask=mfn) # Dataset
-s = sub[0]
-
-oDS = get_ds(sub[0])
 def get_ds(s):
     ''' Returns feat by voxels matrix for input subject '''
     # Grab first scan
@@ -49,17 +43,20 @@ def get_ds(s):
     return ds.transpose()
 
 
+oDS = get_ds(sub[0])
+
 # First subject DS
 ds = get_ds(sub[0])
 # Append other subject DS
+
 for s in range(1,len(sub)):
     ds = np.vstack((ds,get_ds(sub[s])))
 
-ds.shape
+
 print('Datasets stacked')
 
 data = np.array(copy.deepcopy(ds))
-data=data.transpose()
+#data=data.transpose()
 #X : array-like, shape (n_samples, n_features)
 model = mixture.BayesianGaussianMixture(max_iter=100000,
                                       n_components=100,covariance_type='full',
@@ -73,7 +70,6 @@ print('Running model')
 BNP = model.fit(data)
 print('time elapsed')
 print(datetime.datetime.now()-t_start)
-
 
 print(BNP.converged_)
 C = BNP.predict(data) # 
@@ -109,23 +105,3 @@ for i in range(len(sub)):
     nifti.to_filename(ofn)
 
 print('ALL DONE')
-
-#oDS = copy.deepcopy(ds)
-#oDS.samples=Co
-#map2nifti(oDS).to_filename(ofn)
-
-#https://scikit-learn.org/stable/modules/generated/sklearn.mixture.BayesianGaussianMixture.html
-##C = [np.random.randint(500) for _ in range(C.shape[1])]#%%
-#C = BNP.predict(data) # 
-#plt.show()
-#print(set(C))
-##print(BNP.means_)
-##print(BNP.precisions_)
-#print(BNP.converged_)
-##BNP.weight_concentration_
-#print('Converged: {}'.format(BNP.converged_))
-#print('num clusters: {}'.format(len(set(C))))
-#print('means')
-#print(BNP.means_[np.unique(C)].transpose())
-#print('variance')
-#print(1 / BNP.precisions_[np.unique(C)].transpose())
