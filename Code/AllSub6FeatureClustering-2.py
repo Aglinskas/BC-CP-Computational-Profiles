@@ -9,6 +9,8 @@ from sklearn import mixture
 import datetime
 import os 
 
+code_root = '/Users/aidasaglinskas/Desktop/BC-CP-Computational-Profiles/'
+
 root= '/gsfs0/data/poskanzc/MVPN/analysis/net_results/subject_images/'
 root = '/Users/aidasaglinskas/Desktop/BC-CP-Computational-Profiles/Data/subject_images/'
 #sub='sub-01'
@@ -25,17 +27,16 @@ masker = NiftiMasker(mask_img=mfn, standardize=True)
 
 # Grab the first scan
 
-
 #ds = fmri_dataset(fn,mask=mfn) # Dataset
-
 s = sub[0]
+
+oDS = get_ds(sub[0])
 def get_ds(s):
     ''' Returns feat by voxels matrix for input subject '''
     # Grab first scan
     fn = root+f_temp[0].format(s) # Filename
     ds = masker.fit_transform(fn)
-    oDS = copy.deepcopy(ds)
-    
+
     # Append the other scanss
     for i in np.arange(1,len(f_temp)):
         fn = root+f_temp[i].format(s)
@@ -74,7 +75,6 @@ print(datetime.datetime.now()-t_start)
 
 print(BNP.converged_)
 C = BNP.predict(data) # 
-#%%
 print('num clusters: {}'.format(len(set(C))))#
 #%% Arrange Clusters to make a bit more sense
 Co=copy.deepcopy(C)
@@ -89,37 +89,43 @@ order = np.array(order)
 
 for i in range(len(order)):
     Co[C==cmap0[order][i]]=len(order)-i
-
-# Beat the array into the right shape
-Co = Co.reshape((1,Co.shape[0])) # For nifti Masking
-Co = [float(i) for i in Co[0]]
-Co = np.array(Co)
 #%% Map Back out to individual subjects
 
+#C = [np.random.randint(500) for _ in range(C.shape[1])]
+dishout = np.reshape(C,(len(sub),oDS.shape[0]))
 
+analysis_name = 'subs-concat-1'
+for i in range(len(sub)):
+    ofn = os.path.join(code_root,'Results','sub{}-{}'.format(i,analysis_name)+'.nii')
+    Co = dishout[i,:]
+    # Beat the array into the right shape
+    Co = Co.reshape((1,Co.shape[0])) # For nifti Masking
+    Co = [float(i) for i in Co[0]]
+    Co = np.array(Co)
+    
+    nifti = masker.inverse_transform(Co)
+    print(nifti)
+    nifti.to_filename(ofn)
 
+print('ALL DONE')
 
-
-ofn= os.path.join(root,'Cluster_results','allsubs-cid-test'+ datetime.datetime.now().strftime("%s") + '.nii.gz')
 #oDS = copy.deepcopy(ds)
 #oDS.samples=Co
 #map2nifti(oDS).to_filename(ofn)
-nifti = masker.inverse_transform(Co)
-print(nifti)
-nifti.to_filename(ofn)
+
 
 #https://scikit-learn.org/stable/modules/generated/sklearn.mixture.BayesianGaussianMixture.html
-#%%
-C = BNP.predict(data) # 
-plt.show()
-print(set(C))
-#print(BNP.means_)
-#print(BNP.precisions_)
-print(BNP.converged_)
-#BNP.weight_concentration_
-print('Converged: {}'.format(BNP.converged_))
-print('num clusters: {}'.format(len(set(C))))
-print('means')
-print(BNP.means_[np.unique(C)].transpose())
-print('variance')
-print(1 / BNP.precisions_[np.unique(C)].transpose())
+##C = [np.random.randint(500) for _ in range(C.shape[1])]#%%
+#C = BNP.predict(data) # 
+#plt.show()
+#print(set(C))
+##print(BNP.means_)
+##print(BNP.precisions_)
+#print(BNP.converged_)
+##BNP.weight_concentration_
+#print('Converged: {}'.format(BNP.converged_))
+#print('num clusters: {}'.format(len(set(C))))
+#print('means')
+#print(BNP.means_[np.unique(C)].transpose())
+#print('variance')
+#print(1 / BNP.precisions_[np.unique(C)].transpose())
