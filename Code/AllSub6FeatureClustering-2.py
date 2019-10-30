@@ -9,10 +9,12 @@ from sklearn import mixture
 import datetime
 import os 
 
-code_root = '/Users/aidasaglinskas/Desktop/BC-CP-Computational-Profiles/'
 
 root= '/gsfs0/data/poskanzc/MVPN/analysis/net_results/subject_images/'
-root = '/Users/aidasaglinskas/Desktop/BC-CP-Computational-Profiles/Data/subject_images/'
+code_root = '/gsfs0/data/poskanzc/BC-CP-Computational-Profiles/'
+#code_root = '/Users/aidasaglinskas/Desktop/BC-CP-Computational-Profiles/'
+
+#root = '/Users/aidasaglinskas/Desktop/BC-CP-Computational-Profiles/Data/subject_images/'
 #sub='sub-01'
 sub=['sub-01','sub-02','sub-03','sub-04','sub-05','sub-09','sub-10','sub-14','sub-15','sub-16','sub-17','sub-18','sub-19','sub-20']
 #mask_filename = '/Users/craigposkanzer/Documents/MVPN-Data/brain_mask_bool.nii.gz'
@@ -112,7 +114,6 @@ print('ALL DONE')
 #oDS = copy.deepcopy(ds)
 #oDS.samples=Co
 #map2nifti(oDS).to_filename(ofn)
-
 
 #https://scikit-learn.org/stable/modules/generated/sklearn.mixture.BayesianGaussianMixture.html
 ##C = [np.random.randint(500) for _ in range(C.shape[1])]#%%
