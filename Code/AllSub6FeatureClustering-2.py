@@ -42,7 +42,6 @@ def get_ds(s):
         
     return ds.transpose()
 
-
 oDS = get_ds(sub[0])
 
 # First subject DS
