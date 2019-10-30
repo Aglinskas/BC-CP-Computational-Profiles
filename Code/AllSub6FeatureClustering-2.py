@@ -24,28 +24,34 @@ masker = NiftiMasker(mask_img=mfn, standardize=True)
 #ds = fmri_dataset(fn,mask=mfn)
 
 # Grab the first scan
-fn = root+f_temp[0].format(sub[0]) # Filename
+
 
 #ds = fmri_dataset(fn,mask=mfn) # Dataset
 
-ds = masker.fit_transform(fn)
-oDS = copy.deepcopy(ds)
-
-# Append the other scanss
-for i in np.arange(1,len(f_temp)):
-    fn = root+f_temp[i].format(sub[0])
-    #ads = fmri_dataset(fn,mask=mfn)
-    ads = masker.fit_transform(fn)
-    ds = np.vstack((ds,ads))
-
-#append all other subjects
-for i in np.arange(1,13):
-    for i in np.arange(0,len(f_temp)):
-        fn = root+f_temp[i].format(sub[i])
+s = sub[0]
+def get_ds(s):
+    ''' Returns feat by voxels matrix for input subject '''
+    # Grab first scan
+    fn = root+f_temp[0].format(s) # Filename
+    ds = masker.fit_transform(fn)
+    oDS = copy.deepcopy(ds)
+    
+    # Append the other scanss
+    for i in np.arange(1,len(f_temp)):
+        fn = root+f_temp[i].format(s)
         #ads = fmri_dataset(fn,mask=mfn)
         ads = masker.fit_transform(fn)
-        ds = np.vstack((ds,ads))   
-    
+        ds = np.vstack((ds,ads))
+        
+    return ds.transpose()
+
+
+# First subject DS
+ds = get_ds(sub[0])
+# Append other subject DS
+for s in range(1,len(sub)):
+    ds = np.vstack((ds,get_ds(sub[s])))
+
 ds.shape
 print('Datasets stacked')
 
@@ -68,7 +74,6 @@ print(datetime.datetime.now()-t_start)
 
 print(BNP.converged_)
 C = BNP.predict(data) # 
-
 #%%
 print('num clusters: {}'.format(len(set(C))))#
 #%% Arrange Clusters to make a bit more sense
@@ -89,7 +94,12 @@ for i in range(len(order)):
 Co = Co.reshape((1,Co.shape[0])) # For nifti Masking
 Co = [float(i) for i in Co[0]]
 Co = np.array(Co)
-#%% Save the NiFTi with cluster assignments
+#%% Map Back out to individual subjects
+
+
+
+
+
 ofn= os.path.join(root,'Cluster_results','allsubs-cid-test'+ datetime.datetime.now().strftime("%s") + '.nii.gz')
 #oDS = copy.deepcopy(ds)
 #oDS.samples=Co
