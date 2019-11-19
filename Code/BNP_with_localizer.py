@@ -32,7 +32,7 @@ sub=['sub-01','sub-02','sub-03','sub-04','sub-05','sub-09','sub-10','sub-14','su
 #fmri_filename = '/Users/craigposkanzer/Documents/MVPN-Data/5layer/5layer_images/lin_sub-01.nii'
 f_temp = ['{}_lin_img.nii.gz','{}_nl_img.nii.gz','dense_images/{}_5dense_lin_img.nii.gz','dense_images/{}_5dense_nl_img.nii.gz','5layer_images/{}_5layer_lin_img.nii.gz','5layer_images/{}_5layer_nl_img.nii.gz']
 mfn = root+'brain_mask_bool.nii.gz'
-loc_temp = ['localizer_1layer/{}_localizer_1layer_lin_img.nii.gz','localizer_1layer/{}localizer_1layer_nl_img.nii.gz','localizer_5layer_dense/{}_localizer_5layer_dense_lin_img.nii.gz','localizer_5layer_dense/{}_localizer_5layer_dense_nl_img.nii.gz','localizer_5layer/{}_5layer_localizer_lin_img.nii.gz','localizer_5layer/{}_5layer_localizer_nl_img.nii.gz']
+loc_temp = ['localizer_1layer/{}_localizer_1layer_lin_img.nii.gz','localizer_1layer/{}_localizer_1layer_nl_img.nii.gz','localizer_5layer_dense/{}_localizer_5layer_dense_lin_img.nii.gz','localizer_5layer_dense/{}_localizer_5layer_dense_nl_img.nii.gz','localizer_5layer/{}_localizer_5layer_lin_img.nii.gz','localizer_5layer/{}_localizer_5layer_nl_img.nii.gz']
 
 
 
@@ -120,9 +120,21 @@ for i in range(len(order)):
 #%% Map Back out to individual subjects
 
 #C = [np.random.randint(500) for _ in range(C.shape[1])]
-dishout = np.reshape(C,(len(sub),oDS.shape[0]))
+dishout = np.reshape(C,(len(sub)+1,oDS.shape[0]))
 analysis_name = 'subs-concat-1-testrun3'
-for i in range(len(sub)):
+#localizer file
+ofn = os.path.join(code_root,'Results','sub{}-{}_localizer'.format(i,analysis_name)+'.nii')
+Co = dishout[0,:]
+# Beat the array into the right shape
+Co = Co.reshape((1,Co.shape[0])) # For nifti Masking
+Co = [float(i) for i in Co[0]]
+Co = np.array(Co)
+    
+nifti = masker.inverse_transform(Co)
+print(nifti)
+nifti.to_filename(ofn)
+
+for i in range(1,len(sub)):
     ofn = os.path.join(code_root,'Results','sub{}-{}'.format(i,analysis_name)+'.nii')
     Co = dishout[i,:]
     # Beat the array into the right shape
