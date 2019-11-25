@@ -12,6 +12,7 @@ ds = cosmo_fmri_dataset(fullfile(dr,fn),'mask',mask);
     end
 end
 nbrhood=cosmo_spherical_neighborhood(ds,'radius',6);
+% func(sphere)
 %% Compute Consistency Scores, Consesus CIDs
 e = NaN(size(ads.samples));
 cscores=e;ccids=e;
