@@ -17,7 +17,6 @@ nbrhood=cosmo_spherical_neighborhood(ds,'radius',6);it
 
 nvox=length(nbrhood.neighbors)
 pmap = rand(14,nvox);
-
 % pmask with actual values
 %% Save the files 
 cds = ds;
