@@ -18,9 +18,16 @@ e = NaN(size(ads.samples));
 cscores=e;ccids=e;
 for s = 1:size(ads.samples,1)
     clc;disp(s)
-cscore = arrayfun(@(x) 1-length(unique(ads.samples(s,nbrhood.neighbors{x}))) / length(ads.samples(1,nbrhood.neighbors{x})),1:length(ds.samples));
+    
+% How varied are cluster IDs in a sphere, 
+% 0:All different clusters
+% 1:same cluster
+cscore = arrayfun(@(v) 1 - length(unique(ads.samples(s,nbrhood.neighbors{v}))) / length(ads.samples(1,nbrhood.neighbors{v})),1:length(ds.samples));
 
-ccid = arrayfun(@(x) mode(ads.samples(s,nbrhood.neighbors{x})),1:length(ds.samples));
+% Mode of the sphere - consensus ID
+ccid = arrayfun(@(v) mode(ads.samples(s,nbrhood.neighbors{v})),1:length(ds.samples));
+
+% if consensus is less than 80%, unassign voxel
 ccid(cscore<.80)=0;
 
 cscores(s,:) = cscore;
@@ -58,5 +65,21 @@ cosmo_map2fmri(cds,fullfile(odir,sprintf('sub%d_cluster4.nii',s)));
 end
 disp('all done')
 %%
+
+cds = ds;
+odir='/Users/aidasaglinskas/Desktop/BC-CP-Computational-Profiles/';
+
+group_cscore=mean(ccids==mode(ccids));
+group_cscore(mode(ccids)==0)=0;
+group_ccid=mode(ccids);
+group_ccid(group_cscore<=4/14)=0;
+
+cds.samples=group_ccid
+cosmo_map2fmri(cds,fullfile(odir,'group_ccid.nii'));
+
+cds.samples=group_cscore
+cosmo_map2fmri(cds,fullfile(odir,'group_cscore.nii'));
+
+
 
 
