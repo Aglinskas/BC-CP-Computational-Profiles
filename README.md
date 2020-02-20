@@ -3,7 +3,7 @@
 
 Spirit Animal: Jordan Boyd-Graber https://www.youtube.com/watch?v=CEVELIz4WXM&t=281s
 
-
+[Aidas feb 20,2020]
 To do's:
 - Overlay FFA masks over the parcelations, do BNP clusters curve nicely around functional regions?
 - Project the clusters means (6 dim gaussian vector) for all subejcts into a common 6-dim space
